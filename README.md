@@ -82,10 +82,16 @@ Back in this repo's folder:
 powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-Copy-Item .env.example .env
+pip install requests pymisp python-dotenv
 
-Edit .env with your abuse.ch Auth-Key, your MISP URL, and your MISP API key (plain values, no quotes). Then:
+Create a file named .env in the repo folder with your abuse.ch Auth-Key, your MISP URL, and your MISP API key (plain values, no quotes, no spaces around the =):
+
+ABUSECH_AUTH_KEY=your-abusech-auth-key
+MISP_URL=http://localhost:8080
+MISP_API_KEY=your-misp-api-key
+MISP_VERIFY_SSL=False
+
+Then:
 
 powershell
 python threatfox_to_misp.py 1
@@ -96,8 +102,6 @@ Repo contents
 File	Purpose
 threatfox_to_misp.py	Pulls recent ThreatFox IOCs and pushes them into MISP as a published event
 pihole-docker-compose.example.yml	Pi-hole compose template (copy to docker-compose.yml)
-.env.example	Template for the script's secrets; copy to .env (never commit .env)
-requirements.txt	Python dependencies
 .gitignore	Keeps secrets, virtual environments, and Pi-hole data out of Git
 How the pipeline works
 Calls the ThreatFox get_iocs API for the last N days, authenticating with your Auth-Key.
