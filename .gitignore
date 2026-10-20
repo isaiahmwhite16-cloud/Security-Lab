@@ -1,6 +1,11 @@
-﻿.venv/
+# Python / PyCharm
+.venv/
 .env
 __pycache__/
 *.pyc
-
 .idea/
+
+# Pi-hole
+docker-compose.yml
+etc-pihole/
+etc-dnsmasq.d/
