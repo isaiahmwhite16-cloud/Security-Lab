@@ -5,7 +5,10 @@ __pycache__/
 *.pyc
 .idea/
 
-# Pi-hole
-docker-compose.yml
+# Generated lab data
 etc-pihole/
 etc-dnsmasq.d/
+lists/
+suricata/logs/
+suricata/rules/
+misp-docker/
