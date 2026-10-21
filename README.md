@@ -10,19 +10,19 @@ Python scripts pull fresh IOCs from abuse.ch ThreatFox into MISP, then export th
 
 A free abuse.ch account for an Auth-Key: https://auth.abuse.ch/
 
-Quick start
+Quick start - Powershell
 1. Clone this repo
 
-git clone https://github.com/isaiahmwhite16-cloud/Security-Lab.git
-cd Security-Lab
+CommandLine - git clone https://github.com/isaiahmwhite16-cloud/Security-Lab.git
+CommandLine - cd Security-Lab
 2. Start MISP
 
 MISP uses the official MISP/misp-docker project. Clone it outside this repo.
 
-git config --global core.autocrlf input
-git clone https://github.com/MISP/misp-docker.git
-cd misp-docker
-Copy-Item template.env .env
+CommandLine - git config --global core.autocrlf input
+CommandLine - git clone https://github.com/MISP/misp-docker.git
+CommandLine - cd misp-docker
+CommandLine - Copy-Item template.env .env
 
 Edit misp-docker\.env and set these values:
 
@@ -38,18 +38,18 @@ The last two lines move MISP to port 8080 because Pi-hole uses port 80.
 
 Then build and start:
 
-docker compose build
-docker compose up -d
-docker ps
+CommandLine - docker compose build
+CommandLine - docker compose up -d
+CommandLine - docker ps
 
 Log in at http://localhost:8080 with your ADMIN_EMAIL and ADMIN_PASSWORD, then create an API key on your profile's Auth Keys page. MISP shows the key only once, so save it
 
 
 3. Set up the Python scripts
 
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install requests pymisp python-dotenv
+CommandLine - python -m venv .venv
+CommandLine - .\.venv\Scripts\Activate.ps1
+CommandLine - pip install requests pymisp python-dotenv
 
 Create a file named .env in this folder (plain values, no quotes, no spaces around =):
 
@@ -63,13 +63,13 @@ PIHOLE_PASSWORD becomes your Pi-hole admin password. No $ signs
 
 4. Load IOCs into MISP
 
-python threatfox_to_misp.py 1
+CommandLine - python threatfox_to_misp.py 1
 
 The number is how many days of ThreatFox IOCs to pull (1-7). It creates a new MISP event and publishes it.
 
 5. Export from MISP
 
-python misp_export.py
+CommandLine - python misp_export.py
 
 This writes lists\misp-iocs.txt for Pi-hole and suricata\rules\misp.rules for Suricata, and prints a few sample domains. Run this before the next step, because Suricata needs the rules file when it starts.
 
@@ -77,9 +77,9 @@ This writes lists\misp-iocs.txt for Pi-hole and suricata\rules\misp.rules for Su
 
 Set TZ in docker-compose.yml to your timezone, then:
 
-docker compose up -d
-docker ps
-docker exec suricata suricatasc -c ruleset-stats
+CommandLine - docker compose up -d
+CommandLine - docker ps
+CommandLine - docker exec suricata suricatasc -c ruleset-stats
 
 Both containers should be Up, and ruleset-stats should show rules_loaded close to the rule count from step 5 with rules_failed at 0.
 
@@ -89,7 +89,7 @@ Go to the Adlists page (called Lists in some versions) and choose Add blocklist.
 For the address, enter file:///lists/misp-iocs.txt (three slashes), add a comment such as MISP IOCs, and save.
 Tell Pi-hole to read it:
 
-docker exec pihole pihole -g
+CommandLine - docker exec pihole pihole -g
 
 The list's details page should now show a number of entries close to your domain count.
 
@@ -97,11 +97,11 @@ The list's details page should now show a number of entries close to your domain
 
 Pick a domain from lists\misp-iocs.txt (the first line is a comment) or from the samples misp_export.py printed
 
-nslookup THE-DOMAIN 127.0.0.1
+CommandLine - nslookup THE-DOMAIN 127.0.0.1
 
 Pi-hole should answer 0.0.0.0. Then look for the Suricata alert:
 
-Select-String -Path .\suricata\logs\eve.json -Pattern '"event_type":"alert"' | Select-Object -Last 1
+CommandLine - Select-String -Path .\suricata\logs\eve.json -Pattern '"event_type":"alert"' | Select-Object -Last 1
 
 On Linux or macOS: grep '"event_type":"alert"' suricata/logs/eve.json | tail -1
 
@@ -111,8 +111,8 @@ The alert names the domain and carries the malware family and threat type from M
 To pull newer IOCs into the lab, run the two scripts again and reload both services:
 
 powershell
-python threatfox_to_misp.py 1
-python misp_export.py --reload
+CommandLine - python threatfox_to_misp.py 1
+CommandLine - python misp_export.py --reload
 Using Pi-hole as your DNS (optional)
 
 By default Pi-hole answers only lookups that are sent to it. To have it filter a PC's everyday traffic, set that PC's DNS server to Pi-hole. After that, a lookup of any domain on the MISP list is blocked, and Suricata alerts on it.
